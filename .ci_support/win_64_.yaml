@@ -1,0 +1,26 @@
+c_compiler:
+- vs2019
+c_stdlib:
+- vs
+channel_sources:
+- conda-forge
+channel_targets:
+- conda-forge main
+cxx_compiler:
+- vs2019
+gflags:
+- '2.2'
+glog:
+- '0.7'
+libblas:
+- 3.9 *netlib
+libboost_devel:
+- '1.84'
+libcblas:
+- 3.9 *netlib
+sqlite:
+- '3'
+suitesparse:
+- '7'
+target_platform:
+- win-64
