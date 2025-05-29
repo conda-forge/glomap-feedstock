@@ -8,8 +8,6 @@ package:
 source:
   - url: https://github.com/colmap/{{ name }}/archive/{{ version }}.tar.gz
     sha256: ceb4359087cc6f0294be34dbcfae7d7f352ecc9c7a2c7e068c6e6f9ad590c907
-    patches:
-      - colmap-310-compat.patch
 
 build:
   number: 0
