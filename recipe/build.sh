@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_CXX_FLAGS=-D_LIBCPP_DISABLE_AVAILABILITY"
+
 mkdir build
 cd build
 

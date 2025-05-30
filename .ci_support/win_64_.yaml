@@ -13,11 +13,11 @@ gflags:
 glog:
 - '0.7'
 libblas:
-- 3.9 *netlib
+- 3.9.* *netlib
 libboost_devel:
 - '1.86'
 libcblas:
-- 3.9 *netlib
+- 3.9.* *netlib
 sqlite:
 - '3'
 suitesparse:
