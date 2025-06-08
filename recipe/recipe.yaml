@@ -21,7 +21,9 @@ requirements:
     - ${{ compiler('c') }}
     - ${{ stdlib("c") }}
     - if: linux
-      then: libgl-devel
+      then:
+        - libgl-devel
+        - libopengl-devel
     - cmake
     - if: unix
       then: make
