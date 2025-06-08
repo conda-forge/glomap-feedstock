@@ -1,0 +1,108 @@
+schema_version: 1
+
+context:
+  name: glomap
+  version: 1.1.0
+  build_number: 1
+  cuda_version: ${{ env.get("CONDA_OVERRIDE_CUDA", default="None") }}
+  cuda: ${{ "enabled" if cuda_version != "None" else "disabled" }}
+  cuda_build_string: cuda_${{ cuda_version | version_to_buildstring }}
+  string_prefix: ${{ cuda_build_string if cuda ==  "enabled" else "cpu_" }}
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+source:
+  - url: https://github.com/colmap/${{ name }}/archive/${{ version }}.tar.gz
+    sha256: ceb4359087cc6f0294be34dbcfae7d7f352ecc9c7a2c7e068c6e6f9ad590c907
+
+build:
+  number: ${{ build_number }}
+  skip: cuda_compiler_version == "11.8"
+  string: ${{ string_prefix }}py${{ python | version_to_buildstring }}h${{ hash }}_${{ build_number }}
+  variant:
+    use_keys:
+      # use cuda from the variant config, e.g. to build multiple CUDA variants
+      - ${{ "cuda" if cuda == "enabled" }}
+    # this will down-prioritize the cuda variant versus other variants of the package
+    down_prioritize_variant: ${{ 1 if cuda == "enabled" else 0 }}
+  script:
+    file: build
+    env:
+      cuda_compiler_version: ${{ cuda_version | default('None') }}
+      package_version: ${{ version }}
+
+requirements:
+  build:
+    - ${{ compiler('cxx') }}
+    - ${{ compiler('c') }}
+    - ${{ stdlib("c") }}
+    - if: linux
+      then:
+        - libgomp
+    - cmake
+    - if: unix
+      then: make
+    - pkg-config
+    - ninja
+    - if: osx
+      then: llvm-openmp
+    - if: cuda == "enabled"
+      then:
+        - ${{ compiler('cuda') }}
+        - cuda-version ==${{ cuda_version }}
+  host:
+    - if: linux
+      then:
+        - libgl-devel
+        - libopengl-devel
+        - libglx-devel
+    - eigen
+    - libblas
+    - libcblas
+    - suitesparse
+    - ceres-solver
+    - libboost-devel
+    - glog
+    - poselib
+    - colmap
+    - cgal-cpp
+    - freeimage
+    - sqlite
+    - gflags
+    - if: osx
+      then: llvm-openmp
+    - if: linux
+      then: libgomp
+    - if: cuda == "enabled"
+      then:
+        - cuda-version ==${{ cuda_version }}
+        - cuda-cudart-dev
+        - libcurand-dev
+  ignore_run_exports:
+    from_package:
+      - libblas
+      - libcblas
+      - colmap
+      - if: not linux
+        then: gflags
+      - if: win
+        then: poselib
+
+tests:
+  - script:
+      - if: unix
+        then: test -f $PREFIX/bin/glomap
+      - if: win
+        then: if not exist %PREFIX%\\Library\\bin\\glomap.exe exit 1
+
+about:
+  license: BSD-3-Clause
+  license_file: LICENSE
+  summary: GLOMAP is a general purpose global structure-from-motion pipeline for image-based reconstruction.
+  homepage: https://github.com/colmap/glomap
+
+extra:
+  recipe-maintainers:
+    - Tobias-Fischer
