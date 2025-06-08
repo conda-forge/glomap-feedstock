@@ -3,6 +3,11 @@ schema_version: 1
 context:
   name: glomap
   version: 1.1.0
+  build_number: 1
+  cuda_version: ${{ env.get("CONDA_OVERRIDE_CUDA", default="None")}}
+  cuda: ${{ "enabled" if cuda_version != "None" else "disabled" }}
+  cuda_build_string: cuda_${{ cuda_version | version_to_buildstring }}
+  string_prefix: ${{ cuda_build_string if cuda ==  "enabled" else "cpu_" }}
 
 package:
   name: ${{ name }}
@@ -13,7 +18,20 @@ source:
     sha256: ceb4359087cc6f0294be34dbcfae7d7f352ecc9c7a2c7e068c6e6f9ad590c907
 
 build:
-  number: 1
+  number: ${{ build_number }}
+  skip: cuda_compiler_version == "11.8"
+  string: ${{ string_prefix }}py${{ python | version_to_buildstring }}h${{ hash }}_${{ build_number }}
+  variant:
+    use_keys:
+      # use cuda from the variant config, e.g. to build multiple CUDA variants
+      - ${{ "cuda" if cuda == "enabled" }}
+    # this will down-prioritize the cuda variant versus other variants of the package
+    down_prioritize_variant: ${{ 1 if cuda == "enabled" else 0 }}
+  script:
+    file: build
+    env:
+      cuda_compiler_version: ${{ cuda_version | default('None') }}
+      package_version: ${{ version }}
 
 requirements:
   build:
@@ -24,6 +42,8 @@ requirements:
       then:
         - libgl-devel
         - libopengl-devel
+        - libglx-devel
+        - libgomp
     - cmake
     - if: unix
       then: make
@@ -31,8 +51,10 @@ requirements:
     - ninja
     - if: osx
       then: llvm-openmp
-    - if: linux
-      then: libgomp
+    - if: cuda == "enabled"
+      then:
+        - ${{ compiler('cuda') }}
+        - cuda-version ==${{ cuda_version }}
   host:
     - eigen
     - libblas
@@ -51,6 +73,12 @@ requirements:
       then: llvm-openmp
     - if: linux
       then: libgomp
+    - if: cuda == "enabled"
+      then:
+        - cuda-version ==${{ cuda_version }}
+        - cuda-driver-dev
+        - cuda-cudart-dev
+        - libcurand-dev
   ignore_run_exports:
     from_package:
       - libblas
