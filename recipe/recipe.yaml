@@ -40,9 +40,6 @@ requirements:
     - ${{ stdlib("c") }}
     - if: linux
       then:
-        - libgl-devel
-        - libopengl-devel
-        - libglx-devel
         - libgomp
     - cmake
     - if: unix
@@ -56,6 +53,11 @@ requirements:
         - ${{ compiler('cuda') }}
         - cuda-version ==${{ cuda_version }}
   host:
+    - if: linux
+      then:
+        - libgl-devel
+        - libopengl-devel
+        - libglx-devel
     - eigen
     - libblas
     - libcblas
@@ -76,7 +78,6 @@ requirements:
     - if: cuda == "enabled"
       then:
         - cuda-version ==${{ cuda_version }}
-        - cuda-driver-dev
         - cuda-cudart-dev
         - libcurand-dev
   ignore_run_exports:
