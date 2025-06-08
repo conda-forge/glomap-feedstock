@@ -21,7 +21,7 @@ requirements:
     - ${{ compiler('c') }}
     - ${{ stdlib("c") }}
     - if: linux
-      then: ${{ cdt('mesa-libgl-devel') }}
+      then: libgl-devel
     - cmake
     - if: unix
       then: make
