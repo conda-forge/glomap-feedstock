@@ -1,0 +1,77 @@
+schema_version: 1
+
+context:
+  name: glomap
+  version: 1.1.0
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+source:
+  - url: https://github.com/colmap/${{ name }}/archive/${{ version }}.tar.gz
+    sha256: ceb4359087cc6f0294be34dbcfae7d7f352ecc9c7a2c7e068c6e6f9ad590c907
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - ${{ compiler('cxx') }}
+    - ${{ compiler('c') }}
+    - ${{ stdlib("c") }}
+    - if: linux
+      then: ${{ cdt('mesa-libgl-devel') }}
+    - cmake
+    - if: unix
+      then: make
+    - pkg-config
+    - ninja
+    - if: osx
+      then: llvm-openmp
+    - if: linux
+      then: libgomp
+  host:
+    - eigen
+    - libblas
+    - libcblas
+    - suitesparse
+    - ceres-solver
+    - libboost-devel
+    - glog
+    - poselib
+    - colmap
+    - cgal-cpp
+    - freeimage
+    - sqlite
+    - gflags
+    - if: osx
+      then: llvm-openmp
+    - if: linux
+      then: libgomp
+  ignore_run_exports:
+    from_package:
+      - libblas
+      - libcblas
+      - colmap
+      - if: not linux
+        then: gflags
+      - if: win
+        then: poselib
+
+tests:
+  - script:
+      - if: unix
+        then: test -f $PREFIX/bin/glomap
+      - if: win
+        then: if not exist %PREFIX%\\Library\\bin\\glomap.exe exit 1
+
+about:
+  license: BSD-3-Clause
+  license_file: LICENSE
+  summary: GLOMAP is a general purpose global structure-from-motion pipeline for image-based reconstruction.
+  homepage: https://github.com/colmap/glomap
+
+extra:
+  recipe-maintainers:
+    - Tobias-Fischer
