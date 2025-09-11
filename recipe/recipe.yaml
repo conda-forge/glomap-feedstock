@@ -3,7 +3,7 @@ schema_version: 1
 context:
   name: glomap
   version: 1.1.0
-  build_number: 3
+  build_number: 4
   cuda_version: ${{ env.get("CONDA_OVERRIDE_CUDA", default="None") }}
   cuda: ${{ "enabled" if cuda_version != "None" else "disabled" }}
   cuda_build_string: cuda_${{ cuda_version | version_to_buildstring }}
@@ -16,10 +16,11 @@ package:
 source:
   - url: https://github.com/colmap/${{ name }}/archive/${{ version }}.tar.gz
     sha256: ceb4359087cc6f0294be34dbcfae7d7f352ecc9c7a2c7e068c6e6f9ad590c907
+    patches:
+      - 201.patch
 
 build:
   number: ${{ build_number }}
-  skip: cuda_compiler_version == "11.8"
   string: ${{ string_prefix }}py${{ python | version_to_buildstring }}h${{ hash }}_${{ build_number }}
   variant:
     use_keys:
@@ -66,7 +67,6 @@ requirements:
     - libboost-devel
     - glog
     - poselib
-    - colmap
     - cgal-cpp
     - freeimage
     - sqlite
@@ -82,6 +82,8 @@ requirements:
         - libcurand-dev
         - ceres-solver * [build="gpu*"]
         - colmap * [build="cuda*"]
+      else:
+        - colmap * [build="cpu*"]
   ignore_run_exports:
     from_package:
       - libblas
