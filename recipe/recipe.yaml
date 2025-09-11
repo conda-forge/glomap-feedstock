@@ -67,7 +67,6 @@ requirements:
     - libboost-devel
     - glog
     - poselib
-    - colmap
     - cgal-cpp
     - freeimage
     - sqlite
@@ -83,6 +82,8 @@ requirements:
         - libcurand-dev
         - ceres-solver * [build="gpu*"]
         - colmap * [build="cuda*"]
+      else:
+        - colmap * [build="cpu*"]
   ignore_run_exports:
     from_package:
       - libblas
