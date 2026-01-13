@@ -16,8 +16,6 @@ package:
 source:
   - url: https://github.com/colmap/${{ name }}/archive/${{ version }}.tar.gz
     sha256: 52b40cc1f8293414189814372edf46bc27816c03357e164eb5fca79c835f5f10
-    patches:
-      - 201.patch
 
 build:
   number: ${{ build_number }}
