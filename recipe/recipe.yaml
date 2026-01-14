@@ -81,7 +81,7 @@ requirements:
         - ceres-solver * [build="gpu*"]
         - colmap * [build="cuda*"]
       else:
-        - colmap 3.13 [build="cpu*"]
+        - colmap >=3.13 [build="cpu*"]
   ignore_run_exports:
     from_package:
       - libblas
