@@ -69,7 +69,6 @@ requirements:
     - freeimage
     - sqlite
     - gflags
-    - faiss
     - if: osx
       then: llvm-openmp
     - if: linux
