@@ -3,10 +3,9 @@ schema_version: 1
 context:
   name: glomap
   version: "1.2.0"
-  build_number: 0
-  cuda_version: ${{ env.get("CONDA_OVERRIDE_CUDA", default="None") }}
-  cuda: ${{ "enabled" if cuda_version != "None" else "disabled" }}
-  cuda_build_string: cuda_${{ cuda_version | version_to_buildstring }}
+  build_number: 1
+  cuda: ${{ "enabled" if cuda_compiler_version != "None" else "disabled" }}
+  cuda_build_string: cuda_${{ cuda_compiler_version | version_to_buildstring }}
   string_prefix: ${{ cuda_build_string if cuda ==  "enabled" else "cpu_" }}
 
 package:
@@ -29,7 +28,6 @@ build:
   script:
     file: build
     env:
-      cuda_compiler_version: ${{ cuda_version | default('None') }}
       package_version: ${{ version }}
 
 requirements:
@@ -50,7 +48,7 @@ requirements:
     - if: cuda == "enabled"
       then:
         - ${{ compiler('cuda') }}
-        - cuda-version ==${{ cuda_version }}
+        - cuda-version ==${{ cuda_compiler_version }}
   host:
     - if: linux
       then:
@@ -75,13 +73,13 @@ requirements:
       then: libgomp
     - if: cuda == "enabled"
       then:
-        - cuda-version ==${{ cuda_version }}
+        - cuda-version ==${{ cuda_compiler_version }}
         - cuda-cudart-dev
         - libcurand-dev
         - ceres-solver * [build="gpu*"]
-        - colmap * [build="cuda*"]
+        - colmap 3.13.* [build="cuda*"]
       else:
-        - colmap >=3.13 [build="cpu*"]
+        - colmap 3.13.* [build="cpu*"]
   ignore_run_exports:
     from_package:
       - libblas
